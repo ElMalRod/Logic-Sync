@@ -1,0 +1,227 @@
+package analyst;
+import java_cup.runtime.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+parser code {:
+
+    public String resultado="";
+    public static LinkedList<TError> TablaES = new LinkedList<TError>();
+    List<String> lista = new ArrayList<String>();
+      private Map<Object, Object> variables = new HashMap<>();
+    //Metodo al que se llama automaticamente ante algun error sintactico
+
+    public void syntax_error(Symbol s)
+    {
+        String lexema = s.value.toString();
+        int fila = s.right;
+        int columna = s.left;
+
+        System.out.println("!!!!!!! Error Sintactico Recuperado !!!!!!!");
+        System.out.println("\t\tLexema: "+lexema);
+        System.out.println("\t\tFila: "+fila);
+        System.out.println("\t\tColumna: "+columna);
+
+        TError datos = new TError(lexema,fila,columna,"Error Sintactico","Caracter no esperado");
+        TablaES.add(datos);
+
+
+    }
+
+    //Metodo al que se llama en el momento en que ya no es posible una recuperacion de errores
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception
+    {
+        String lexema = s.value.toString();
+        int fila = s.right;
+        int columna = s.left;
+
+        System.out.println("!!!!!!! Error Sintactico, Panic Mode !!!!!!! ");
+        System.out.println("\t\tLexema: "+lexema);
+        System.out.println("\t\tFila: "+fila);
+        System.out.println("\t\tColumna: "+columna);
+
+        TError datos = new TError(lexema,fila,columna,"Error Sintactico","Caracter no esperado");
+        TablaES.add(datos);
+
+    }
+public void instrEscribir(String e) {
+            System.out.println("--> " + e);
+            resultado += e + "\n";
+        }
+
+public void instrLeer(String id) {
+    Scanner scanner = new Scanner(System.in);
+    System.out.print("--> ");
+    String input = scanner.nextLine();
+    Object valor = null;
+
+    if (variables.containsKey(id)) {
+        Object tipo = variables.get(id);
+
+        if (tipo.equals("int")) {
+            try {
+                valor = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Error de formato: se esperaba un entero");
+            }
+        } else if (tipo.equals("double")) {
+            try {
+                valor = Double.parseDouble(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Error de formato: se esperaba un flotante");
+            }
+        } else if (tipo.equals("String")) {
+            valor = input;
+        }
+    } else {
+        System.out.println("Error: la variable no ha sido declarada");
+    }
+
+    if (valor != null) {
+        variables.put(id, valor);
+    }
+}
+private Object evaluarExpresion(Object expresion) {
+    if (expresion instanceof Integer) {
+        return expresion;
+    } else if (expresion instanceof String) {
+        String expr = (String) expresion;
+        if (expr.matches("\\d+")) {
+            return Integer.parseInt(expr);
+        } else if (expr.matches("\\d+\\.\\d+")) {
+            return Double.parseDouble(expr);
+        } else {
+            System.out.println("Error de formato de expresión");
+        }
+    } else {
+        System.out.println("Error de tipo de expresión");
+    }
+    return null;
+}
+
+:};
+//----> declaracion  terminales
+
+//----> Declaración de terminales
+terminal comilla, ESCRIBIR, LEER, SI, SINO, FINSI, PARA, FINPARA, HASTA, HACER, CON_PASO, MIENTRAS, FINMIENTRAS, ENTERO, FLOTANTE, CADENA, mas, menos, mult, div, parenta, parentc, puntocoma, igual, menor, mayor;
+terminal Integer numero, decimal;
+terminal String id;
+//----> Declaracion de no terminales
+non terminal programa , instrucciones, instruccion, declaracion, tipo_variable, asignacion, escritura, lectura, sentencia, sentIf, sentFor, sentWhile, condicion, aux, declaracion_variable;
+non terminal Integer expresion;
+
+
+//----> declaracion de precedencia
+precedence left mas, menos;
+precedence left mult, div;
+precedence left  igual;
+
+//----> declaracion de producciones
+programa ::= instrucciones ;
+
+instrucciones ::= instruccion
+                | instrucciones instruccion ;
+
+instruccion ::= declaracion
+               | asignacion
+               | escritura
+               | lectura
+               | sentencia;
+
+/*DECLARACIONES*/
+declaracion ::= tipo_variable:t declaracion_variable:d puntocoma {: System.out.println("------------------ declaracion"); variables.put(d, t); :};
+declaracion_variable ::= id:id {: RESULT = id; :}
+                        | id:id igual expresion:e {: RESULT = id; :}
+                        | id:id igual error {: System.out.println("Error de asignación: tipo de dato incorrecto"); :};
+
+
+tipo_variable ::= ENTERO {: RESULT = "int"; :}
+                  | FLOTANTE {: RESULT = "double"; :}
+                  | CADENA {: RESULT = "String"; :};
+
+
+asignacion ::= id:id igual expresion:e puntocoma {:
+    Object valor = null;
+    if (variables.containsKey(id)) {
+        valor = evaluarExpresion(e);
+        variables.put(id, valor);
+    } else {
+        System.out.println("Error de asignación: variable no declarada");
+    }
+:};
+
+
+
+/*ESCRITURA Y LECTURA*/
+
+escritura ::= ESCRIBIR parenta comilla:e1 parentc puntocoma {:
+    System.out.println("------------------ escribir");
+    Object valor = null;
+
+    if (variables.containsKey(e1)) {
+        valor = variables.get(e1);
+    } else {
+
+    }
+
+    if (valor != null) {
+        instrEscribir(valor.toString());}
+    :}
+| ESCRIBIR parenta id:id parentc puntocoma {:
+    System.out.println("------------------ escribir");
+    Object valor = null;
+
+    if (variables.containsKey(id)) {
+        valor = variables.get(id);
+    } else {
+
+    }
+
+    if (valor != null) {
+        instrEscribir(valor.toString());}
+    :};
+
+
+lectura ::= LEER parenta id:id parentc puntocoma {:System.out.println("------------------ leer"); instrLeer(id.toString()); :};
+
+
+
+
+/*SENTENCIAS*/
+sentencia ::= sentIf
+             | sentFor
+             | sentWhile;
+
+sentIf ::= SI parenta condicion parentc HACER instrucciones SINO instrucciones FINSI
+           | SI parenta condicion parentc HACER instrucciones FINSI;
+
+sentFor ::= PARA parenta id igual expresion parentc HASTA aux CON_PASO aux HACER instrucciones FINPARA;
+
+sentWhile ::= MIENTRAS parenta condicion parentc HACER instrucciones FINMIENTRAS;
+
+
+/*EXPRESIONES*/
+expresion ::= expresion:e1 mas expresion:e2           {: RESULT = e1 + e2; :}
+           | expresion:e1 menos expresion:e2          {: RESULT = e1 - e2; :}
+           | expresion:e1 mult expresion:e2           {: RESULT = e1 * e2; :}
+           | expresion:e1 div expresion:e2            {: RESULT = e1 / e2; :}
+           | parenta expresion:e parentc              {: RESULT = e; :}
+           | numero:n                                 {: RESULT = n; :}
+           | decimal:d                                {: RESULT = d; :}
+           | id   ;
+
+/*CONDICIONES*/
+condicion ::= aux menor aux
+             | aux mayor aux
+             | aux igual aux;
+aux::= numero
+      | id
+  ;
+
+
+
+
