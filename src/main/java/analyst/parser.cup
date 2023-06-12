@@ -111,8 +111,10 @@ terminal comilla, ESCRIBIR, LEER, SI, SINO, FINSI, PARA, FINPARA, HASTA, HACER, 
 terminal Integer numero, decimal;
 terminal String id;
 //----> Declaracion de no terminales
-non terminal programa , instrucciones, instruccion, declaracion, tipo_variable, asignacion, escritura, lectura, sentencia, sentIf, sentFor, sentWhile, condicion, aux, declaracion_variable;
+non terminal programa , instrucciones, instruccion, declaracion, tipo_variable, asignacion, escritura, lectura, sentencia, sentIf, sentFor, sentWhile, aux, declaracion_variable;
 non terminal Integer expresion;
+non terminal Boolean condicion;
+
 
 
 //----> declaracion de precedencia
@@ -210,7 +212,7 @@ sentencia ::= sentIf
              | sentFor
              | sentWhile;
 
-sentIf ::= SI parenta condicion parentc HACER instrucciones SINO instrucciones FINSI
+sentIf ::= SI parenta condicion:e1 parentc HACER instrucciones SINO instrucciones FINSI {:if (e1==true){RESULT = true; System.out.println("------------------ si se puede TRUE"); } else{RESULT = false; System.out.println("------------------ no se puede FALSE"); return null;}:}
            | SI parenta condicion parentc HACER instrucciones FINSI;
 
 sentFor ::= PARA parenta id igual expresion parentc HASTA aux CON_PASO aux HACER instrucciones FINPARA;
@@ -230,13 +232,10 @@ expresion ::= expresion:e1 mas expresion:e2           {: RESULT = e1 + e2; :}
 
 
 /*CONDICIONES*/
-condicion ::= aux menor aux
-             | aux mayor aux
-             | aux igual aux;
+condicion ::= expresion:e1 menor expresion:e2 {: if (e1<=e2){RESULT = true; System.out.println("------------------ TRUE"); } else{RESULT = false; System.out.println("------------------ FALSE");} :}
+             | expresion:e1 mayor expresion:e2  {: if (e1>=e2){RESULT = true; System.out.println("------------------ TRUE");} else{RESULT = false; System.out.println("------------------ FALSE");} :}
+             | expresion:e1 igual expresion:e2 {: if (e1==e2){RESULT = true; System.out.println("------------------ TRUE");} else{RESULT = false; System.out.println("------------------ FALSE");} :};
+
 aux::= numero
       | id
   ;
-
-
-
-
