@@ -136,8 +136,22 @@ instruccion ::= declaracion
 declaracion ::= tipo_variable:t declaracion_variable:d puntocoma {: System.out.println("------------------ declaracion"); variables.put(d, t); :};
 declaracion_variable ::= id:id {: RESULT = id; :}
                         | id:id igual expresion:e {: RESULT = id; :}
-                        | id:id igual error {: System.out.println("Error de asignación: tipo de dato incorrecto"); :};
-
+                        | id:id igual error {: System.out.println("Error de asignación: tipo de dato incorrecto"); :}
+                        | id:id tipo_variable:t igual expresion:e {:
+                            Object valor = evaluarExpresion(e);
+                            if (valor != null) {
+                                if (t.equals("int") && valor instanceof Integer) {
+                                    variables.put(id, valor);
+                                } else if (t.equals("double") && valor instanceof Double) {
+                                    variables.put(id, valor);
+                                } else if (t.equals("String") && valor instanceof String) {
+                                    variables.put(id, valor);
+                                } else {
+                                    System.out.println("Error de asignación: tipo de dato incorrecto");
+                                }
+                            }
+                            RESULT = id;
+                        :};
 
 tipo_variable ::= ENTERO {: RESULT = "int"; :}
                   | FLOTANTE {: RESULT = "double"; :}
@@ -212,7 +226,8 @@ expresion ::= expresion:e1 mas expresion:e2           {: RESULT = e1 + e2; :}
            | parenta expresion:e parentc              {: RESULT = e; :}
            | numero:n                                 {: RESULT = n; :}
            | decimal:d                                {: RESULT = d; :}
-           | id   ;
+           | id:id                                    {: RESULT = variables.get(id); :};
+
 
 /*CONDICIONES*/
 condicion ::= aux menor aux
