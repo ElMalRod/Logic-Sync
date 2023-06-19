@@ -5,9 +5,12 @@
 package forms;
 
 import analyst.*;
+import controladores.Instruccion;
+import controladores.TablaDeSimbolos;
 import java_cup.runtime.Symbol;
 
-import java.io.StringReader;
+import java.io.*;
+import java.util.LinkedList;
 
 /**
  *
@@ -19,11 +22,64 @@ public class appform extends javax.swing.JFrame {
      * Creates new form appform
      */
 
-
     public appform() {
         initComponents();
     }
+    public static void mostrar(String rutaArchivo) {
+        try {
+            FileReader fileReader = new FileReader(rutaArchivo);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String linea;
 
+            while ((linea = bufferedReader.readLine()) != null) {
+                jTextArea2.append(linea + "\n");
+            }
+
+            bufferedReader.close();
+        } catch (IOException e) {
+            System.out.println("Ocurrió un error al leer el archivo: " + e.getMessage());
+        }
+    }
+    private static void interpretar( String path) {
+        Sintactico pars;
+        LinkedList<Instruccion> AST_arbolSintaxisAbstracta=null;
+        try {
+            Lexico lexico = new Lexico(new StringReader(path));
+            pars = new Sintactico(lexico);
+            pars.parse();
+            AST_arbolSintaxisAbstracta=pars.getAST();
+        } catch (Exception ex) {
+            System.out.println("Error fatal en compilación de entrada.");
+        }
+        ejecutarAST(AST_arbolSintaxisAbstracta);
+    }
+    private static void ejecutarAST( LinkedList<Instruccion> ast) {
+        if(ast==null){
+            System.out.println("No es posible ejecutar las instrucciones porque\r\n"
+                    + "el árbol no fue cargado de forma adecuada por la existencia\r\n"
+                    + "de errores léxicos o sintácticos.");
+            return;
+        }
+        TablaDeSimbolos ts=new TablaDeSimbolos();
+        for(Instruccion ins:ast){
+            if(ins!=null)
+                ins.ejecutar(ts);
+
+        }
+    }
+    public void  LimpiarArchivo() {
+            String rutaArchivo = "jiji.txt"; // Ruta del archivo que deseas limpiar
+
+            try {
+                FileWriter fileWriter = new FileWriter(rutaArchivo);
+                fileWriter.close();
+
+                System.out.println("Se ha limpiado el archivo correctamente.");
+            } catch (IOException e) {
+                System.out.println("Ocurrió un error al limpiar el archivo: " + e.getMessage());
+            }
+            jTextArea2.setText(" ");
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -41,8 +97,8 @@ public class appform extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         jPanel2 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTextArea2 = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocationByPlatform(true);
@@ -98,7 +154,7 @@ public class appform extends javax.swing.JFrame {
 
         jTextArea1.setBackground(new java.awt.Color(25, 33, 48));
         jTextArea1.setColumns(20);
-        jTextArea1.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
+        jTextArea1.setFont(new java.awt.Font("Roboto", 0, 14)); // NOI18N
         jTextArea1.setForeground(new java.awt.Color(197, 244, 103));
         jTextArea1.setRows(5);
         jScrollPane1.setViewportView(jTextArea1);
@@ -107,20 +163,19 @@ public class appform extends javax.swing.JFrame {
 
         jPanel2.setBackground(new java.awt.Color(0, 153, 153));
 
-        jTextPane1.setBackground(new java.awt.Color(25, 33, 48));
-        jTextPane1.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
-        jTextPane1.setForeground(new java.awt.Color(92, 178, 255));
-        jScrollPane2.setViewportView(jTextPane1);
+        jTextArea2.setColumns(20);
+        jTextArea2.setRows(5);
+        jScrollPane3.setViewportView(jTextArea2);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1000, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 1000, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
         );
 
         bg.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 430, 1000, 170));
@@ -138,24 +193,12 @@ public class appform extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void executebtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executebtActionPerformed
-        // TODO add your handling code here:
-        String texto = jTextArea1.getText(); // Obtener el texto del JTextArea
-        Lexer lexer = new Lexer(new StringReader(texto)); // Crear una instancia del Lexer
-        Sintactico parser = new Sintactico(lexer); // Crear una instancia del Sintactico
-        try {
-            parser.parse(); // Iniciar el analisis sintactico
-            jTextPane1.setText("Analisis realizado correctamente"); // Mostrar mensaje de exito
-        } catch (Exception e) {
-
-
-           // jTextPane1.setText("Error de sintaxis en la linea: " + parser.linea + " y columna: " + parser.columna); // Mostrar mensaje de error
-        }
-
-
-
-    }//GEN-LAST:event_executebtActionPerformed
+    private void executebtActionPerformed(java.awt.event.ActionEvent evt) {
+        LimpiarArchivo();
+        interpretar(jTextArea1.getText().toString());
+        System.out.println("leido");
+        mostrar("jiji.txt");
+    }
 
     /**
      * @param args the command line arguments
@@ -200,8 +243,8 @@ public class appform extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextPane jTextPane1;
+    private static javax.swing.JTextArea jTextArea2;
     // End of variables declaration//GEN-END:variables
 }

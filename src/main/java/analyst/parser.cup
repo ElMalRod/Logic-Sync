@@ -1,241 +1,113 @@
 package analyst;
-import java_cup.runtime.*;
+import controladores.*;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
-
-parser code {:
-
-    public String resultado="";
-    public static LinkedList<TError> TablaES = new LinkedList<TError>();
-    List<String> lista = new ArrayList<String>();
-      private Map<Object, Object> variables = new HashMap<>();
-    //Metodo al que se llama automaticamente ante algun error sintactico
-
-    public void syntax_error(Symbol s)
-    {
-        String lexema = s.value.toString();
-        int fila = s.right;
-        int columna = s.left;
-
-        System.out.println("!!!!!!! Error Sintactico Recuperado !!!!!!!");
-        System.out.println("\t\tLexema: "+lexema);
-        System.out.println("\t\tFila: "+fila);
-        System.out.println("\t\tColumna: "+columna);
-
-        TError datos = new TError(lexema,fila,columna,"Error Sintactico","Caracter no esperado");
-        TablaES.add(datos);
-
-
+import java_cup.runtime.Symbol;
+import java_cup.runtime.XMLElement;
+parser code
+{:
+    public LinkedList<Instruccion> AST;
+    public void syntax_error(Symbol s){
+            System.err.println("!!!!!!! Error Sintactico, Panic Mode !!!!!!! en la Línea " + (s.left) +" Columna "+s.right+ ". No se esperaba: " +s.value+".");
     }
-
-    //Metodo al que se llama en el momento en que ya no es posible una recuperacion de errores
-    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception
-    {
-        String lexema = s.value.toString();
-        int fila = s.right;
-        int columna = s.left;
-
-        System.out.println("!!!!!!! Error Sintactico, Panic Mode !!!!!!! ");
-        System.out.println("\t\tLexema: "+lexema);
-        System.out.println("\t\tFila: "+fila);
-        System.out.println("\t\tColumna: "+columna);
-
-        TError datos = new TError(lexema,fila,columna,"Error Sintactico","Caracter no esperado");
-        TablaES.add(datos);
-
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
+            System.err.println("!!!!!!! Error Sintactico, Panic Mode !!!!!!! irrecuperable en la Línea " + (s.left)+ " Columna "+s.right+". Componente " + s.value + " no reconocido.");
     }
-public void instrEscribir(String e) {
-            System.out.println("--> " + e);
-            resultado += e + "\n";
-        }
-
-public void instrLeer(String id) {
-    Scanner scanner = new Scanner(System.in);
-    System.out.print("--> ");
-    String input = scanner.nextLine();
-    Object valor = null;
-
-    if (variables.containsKey(id)) {
-        Object tipo = variables.get(id);
-
-        if (tipo.equals("int")) {
-            try {
-                valor = Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                System.out.println("Error de formato: se esperaba un entero");
-            }
-        } else if (tipo.equals("double")) {
-            try {
-                valor = Double.parseDouble(input);
-            } catch (NumberFormatException e) {
-                System.out.println("Error de formato: se esperaba un flotante");
-            }
-        } else if (tipo.equals("String")) {
-            valor = input;
-        }
-    } else {
-        System.out.println("Error: la variable no ha sido declarada");
+    public LinkedList<Instruccion> getAST() {
+        return AST;
     }
+:}
 
-    if (valor != null) {
-        variables.put(id, valor);
-    }
-}
-private Object evaluarExpresion(Object expresion) {
-    if (expresion instanceof Integer) {
-        return expresion;
-    } else if (expresion instanceof String) {
-        String expr = (String) expresion;
-        if (expr.matches("\\d+")) {
-            return Integer.parseInt(expr);
-        } else if (expr.matches("\\d+\\.\\d+")) {
-            return Double.parseDouble(expr);
-        } else {
-            System.out.println("Error de formato de expresión");
-        }
-    } else {
-        System.out.println("Error de tipo de expresión");
-    }
-    return null;
-}
+terminal String PUNTOCOMA,DOSPUNTOS,PARENTA,PARENTC;
+terminal String MAS,MENOS,POR,DIV,CONCAT;
+terminal String INCREMENTO,DECREMENTO;
+terminal String MENOR,MAYOR;
+terminal String ENTERO;
+terminal String DECIMAL;
+terminal String CARACTER;
+terminal String CADENA;
+terminal String UMENOS;
+terminal String RESCRIBIR, RMIENTRAS,RENTERO,RSI,RSINO,RCADENA,RHACER,RFINSI, RFINMIENTRAS;
+terminal String RHASTA, RPARA, RCONPASO, RFINPARA,RSEGUN,RFINSEGUN, RDEOTROMODO;
+terminal String IGUAL;
+terminal String IDENTIFICADOR;
 
-:};
-//----> declaracion  terminales
+non terminal ini;
+non terminal LinkedList<Instruccion> instrucciones;
+non terminal Instruccion instruccion;
+non terminal Operacion expresion;
+non terminal LinkedList<Instruccion> else_ifs;
+non terminal Operacion expresion_cadena;
+non terminal Operacion expresion_logica;
+non terminal caso, cases;
+precedence left CONCAT;
+precedence left MAS,MENOS;
+precedence left POR,DIV;
+precedence right UMENOS;
+precedence nonassoc INCREMENTO,DECREMENTO;
 
-//----> Declaración de terminales
-terminal comilla, ESCRIBIR, LEER, SI, SINO, FINSI, PARA, FINPARA, HASTA, HACER, CON_PASO, MIENTRAS, FINMIENTRAS, ENTERO, FLOTANTE, CADENA, mas, menos, mult, div, parenta, parentc, puntocoma, igual, menor, mayor;
-terminal Integer numero, decimal;
-terminal String id;
-//----> Declaracion de no terminales
-non terminal programa , instrucciones, instruccion, declaracion, tipo_variable, asignacion, escritura, lectura, sentencia, sentIf, sentFor, sentWhile, aux, declaracion_variable;
-non terminal Integer expresion;
-non terminal Boolean condicion;
+start with ini;
 
+ini::=instrucciones:a{:
+    parser.AST=a;
+:}
+;
 
+instrucciones ::=
+   instrucciones:a instruccion:b{:RESULT=a; RESULT.add(b);:}
+ | instruccion:a{:RESULT=new LinkedList<>(); RESULT.add(a);:}
+;
 
-//----> declaracion de precedencia
-precedence left mas, menos;
-precedence left mult, div;
-precedence left  igual;
+instruccion ::=
+   RESCRIBIR   PARENTA expresion_cadena:a PARENTC PUNTOCOMA                          {:RESULT=new Escribir(a);:}
+ | RMIENTRAS    PARENTA expresion_logica:a PARENTC RHACER instrucciones:b RFINMIENTRAS {:RESULT=new Mientras(a,b);:}
+ | RENTERO      IDENTIFICADOR:a PUNTOCOMA                                           {:RESULT=new Declaracion(a,Tipo.NUMERO);:}
+ | RCADENA    IDENTIFICADOR:a PUNTOCOMA                                           {:RESULT=new Declaracion(a,Tipo.CARACTER);:}
+ | IDENTIFICADOR:a IGUAL expresion:b PUNTOCOMA                             {:RESULT=new Asignacion(a,b);:}
+ | RSI PARENTA expresion_logica:a PARENTC RHACER instrucciones:b RFINSI          {:RESULT=new Si(a,b);:}
+ | RSI PARENTA expresion_logica:a PARENTC RHACER instrucciones:b RFINSI  RSINO RHACER instrucciones:c RFINSI {:RESULT=new Si(a,b,c);:}
+ | RSI PARENTA expresion_logica:a PARENTC RHACER instrucciones:b RFINSI else_ifs:l {:RESULT=new Si(a,b,l,null);:}
+ | RSI PARENTA expresion_logica:a PARENTC RHACER instrucciones:b RFINSI else_ifs:l RSINO RHACER instrucciones:c RFINSI {:RESULT=new Si(a,b,l,c);:}
+ | RPARA expresion:a RHASTA expresion:b RCONPASO expresion:c RHACER instrucciones:d RFINPARA {:RESULT=new Para(a,b,c,d);:}
+ | RSEGUN expresion:a  RHACER cases:l RFINSEGUN {: //RESULT=new Segun(a,l);:}
+ | IDENTIFICADOR:a INCREMENTO PUNTOCOMA                                          {:RESULT=new Incremento(a);:}
+ | IDENTIFICADOR:a DECREMENTO PUNTOCOMA                                          {:RESULT=new Decremento(a);:}
+ | error
+;
 
-//----> declaracion de producciones
-programa ::= instrucciones ;
+else_ifs ::= else_ifs:l RSINO RSI PARENTA expresion_logica:a PARENTC RHACER instrucciones:b RFINSI {:RESULT= l; RESULT.add(new Si(a,b));:}
+                      | RSINO RSI PARENTA expresion_logica:a PARENTC RHACER instrucciones:b RFINSI {:RESULT= new LinkedList<>(); RESULT.add(new Si(a,b));:}
+;
+cases ::=
+    caso
+ | cases caso
+ ;
 
-instrucciones ::= instruccion
-                | instrucciones instruccion ;
+caso ::=
+    PARENTA expresion:a PARENTC DOSPUNTOS instrucciones:b        {::}
+ | RDEOTROMODO DOSPUNTOS instrucciones:a                   {::}
+ ;
 
-instruccion ::= declaracion
-               | asignacion
-               | escritura
-               | lectura
-               | sentencia;
+expresion ::=
+    MENOS expresion:a                               {:RESULT=new Operacion(a,Operacion.Tipo_operacion.NEGATIVO);:}%prec UMENOS
+ |  expresion:a MAS        expresion:b     {:RESULT=new Operacion(a,b,Operacion.Tipo_operacion.SUMA);:}
+ |  expresion:a MENOS      expresion:b     {:RESULT=new Operacion(a,b,Operacion.Tipo_operacion.RESTA);:}
+ |  expresion:a POR        expresion:b     {:RESULT=new Operacion(a,b,Operacion.Tipo_operacion.MULTIPLICACION);:}
+ |  expresion:a DIV   expresion:b     {:RESULT=new Operacion(a,b,Operacion.Tipo_operacion.DIVISION);:}
+ |  PARENTA expresion:a PARENTC                       {:RESULT=a;:}
+ |  ENTERO:a                                                 {:RESULT=new Operacion(new Double(a));:}
+ |  DECIMAL:a                                                {:RESULT=new Operacion(new Double(a));:}
+ |  CARACTER:a                                               {:RESULT=new Operacion(a,Operacion.Tipo_operacion.CARACTER);:}
+ |  IDENTIFICADOR: a                                         {:RESULT=new Operacion(a,Operacion.Tipo_operacion.IDENTIFICADOR);:}
 
-/*DECLARACIONES*/
-declaracion ::= tipo_variable:t declaracion_variable:d puntocoma {: System.out.println("------------------ declaracion"); variables.put(d, t); :};
-declaracion_variable ::= id:id {: RESULT = id; :}
-                        | id:id igual expresion:e {: RESULT = id; :}
-                        | id:id igual error {: System.out.println("Error de asignación: tipo de dato incorrecto"); :}
-                        | id:id tipo_variable:t igual expresion:e {:
-                            Object valor = evaluarExpresion(e);
-                            if (valor != null) {
-                                if (t.equals("int") && valor instanceof Integer) {
-                                    variables.put(id, valor);
-                                } else if (t.equals("double") && valor instanceof Double) {
-                                    variables.put(id, valor);
-                                } else if (t.equals("String") && valor instanceof String) {
-                                    variables.put(id, valor);
-                                } else {
-                                    System.out.println("Error de asignación: tipo de dato incorrecto");
-                                }
-                            }
-                            RESULT = id;
-                        :};
+;
 
-tipo_variable ::= ENTERO {: RESULT = "int"; :}
-                  | FLOTANTE {: RESULT = "double"; :}
-                  | CADENA {: RESULT = "String"; :};
+expresion_cadena::=
+    expresion_cadena:a CONCAT expresion_cadena:b {:RESULT=new Operacion(a,b,Operacion.Tipo_operacion.CONCATENACION);:}
+ |  CADENA:a                                     {:RESULT=new Operacion(a,Operacion.Tipo_operacion.CADENA);:}
+ |  expresion:a                         {:RESULT=a;:}
+;
 
-
-asignacion ::= id:id igual expresion:e puntocoma {:
-    Object valor = null;
-    if (variables.containsKey(id)) {
-        valor = evaluarExpresion(e);
-        variables.put(id, valor);
-    } else {
-        System.out.println("Error de asignación: variable no declarada");
-    }
-:};
-
-
-
-/*ESCRITURA Y LECTURA*/
-
-escritura ::= ESCRIBIR parenta comilla:e1 parentc puntocoma {:
-    System.out.println("------------------ escribir");
-    Object valor = null;
-
-    if (variables.containsKey(e1)) {
-        valor = variables.get(e1);
-    } else {
-
-    }
-
-    if (valor != null) {
-        instrEscribir(valor.toString());}
-    :}
-| ESCRIBIR parenta id:id parentc puntocoma {:
-    System.out.println("------------------ escribir");
-    Object valor = null;
-
-    if (variables.containsKey(id)) {
-        valor = variables.get(id);
-    } else {
-
-    }
-
-    if (valor != null) {
-        instrEscribir(valor.toString());}
-    :};
-
-
-lectura ::= LEER parenta id:id parentc puntocoma {:System.out.println("------------------ leer"); instrLeer(id.toString()); :};
-
-
-
-
-/*SENTENCIAS*/
-sentencia ::= sentIf
-             | sentFor
-             | sentWhile;
-
-sentIf ::= SI parenta condicion:e1 parentc HACER instrucciones SINO instrucciones FINSI {:if (e1==true){RESULT = true; System.out.println("------------------ si se puede TRUE"); } else{RESULT = false; System.out.println("------------------ no se puede FALSE"); return null;}:}
-           | SI parenta condicion parentc HACER instrucciones FINSI;
-
-sentFor ::= PARA parenta id igual expresion parentc HASTA aux CON_PASO aux HACER instrucciones FINPARA;
-
-sentWhile ::= MIENTRAS parenta condicion parentc HACER instrucciones FINMIENTRAS;
-
-
-/*EXPRESIONES*/
-expresion ::= expresion:e1 mas expresion:e2           {: RESULT = e1 + e2; :}
-           | expresion:e1 menos expresion:e2          {: RESULT = e1 - e2; :}
-           | expresion:e1 mult expresion:e2           {: RESULT = e1 * e2; :}
-           | expresion:e1 div expresion:e2            {: RESULT = e1 / e2; :}
-           | parenta expresion:e parentc              {: RESULT = e; :}
-           | numero:n                                 {: RESULT = n; :}
-           | decimal:d                                {: RESULT = d; :}
-           | id:id                                    {: RESULT = variables.get(id); :};
-
-
-/*CONDICIONES*/
-condicion ::= expresion:e1 menor expresion:e2 {: if (e1<=e2){RESULT = true; System.out.println("------------------ TRUE"); } else{RESULT = false; System.out.println("------------------ FALSE");} :}
-             | expresion:e1 mayor expresion:e2  {: if (e1>=e2){RESULT = true; System.out.println("------------------ TRUE");} else{RESULT = false; System.out.println("------------------ FALSE");} :}
-             | expresion:e1 igual expresion:e2 {: if (e1==e2){RESULT = true; System.out.println("------------------ TRUE");} else{RESULT = false; System.out.println("------------------ FALSE");} :};
-
-aux::= numero
-      | id
-  ;
+expresion_logica  ::=
+   expresion:a  MAYOR   expresion:b{:RESULT=new Operacion(a,b, Operacion.Tipo_operacion.MAYOR_QUE);:}
+ | expresion:a  MENOR   expresion:b{:RESULT=new Operacion(a,b, Operacion.Tipo_operacion.MENOR_QUE);:}
+;
