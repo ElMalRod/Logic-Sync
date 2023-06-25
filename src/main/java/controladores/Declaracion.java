@@ -10,6 +10,7 @@ public class Declaracion implements Instruccion{
     @Override
     public Object ejecutar(TablaDeSimbolos ts) {
         ts.add(new Simbolo(id,tipo));
+        System.out.println("delaracion: "+id);
         return null;
     }
 

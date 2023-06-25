@@ -9,6 +9,7 @@ public class Operacion implements Instruccion{
         DIVISION,
         NEGATIVO,
         NUMERO,
+        DECIMAL,
         CARACTER,
         IDENTIFICADOR,
         CADENA,
@@ -53,6 +54,8 @@ public class Operacion implements Instruccion{
 
         }
         else if(tipo == Tipo_operacion.NUMERO){
+            return new Double(valor.toString());
+        }else if(tipo == Tipo_operacion.DECIMAL){
             return new Double(valor.toString());
         }else if(tipo == Tipo_operacion.IDENTIFICADOR){
             return ts.getValor(valor.toString());

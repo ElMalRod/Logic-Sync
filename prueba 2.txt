@@ -1,0 +1,100 @@
+----------------> PARA
+entero a;
+a= 1;
+PARA a  HASTA 10 ConPaso 1 Hacer
+escribir(2*a);
+a++;
+FINPARA
+---------------------------------------------------------------------------> IF
+entero s;
+s= 20
+entero b;
+b = 12;
+entero c;
+c = 11;
+si(s>40) HACER
+	ESCRIBIR("s es mayor que 30.");
+	si(b>11) HACER
+		ESCRIBIR("s es mayor que 30 y b es mayor que 11.");
+		si(c>12)HACER
+			ESCRIBIR("s es mayor que 30, b es mayor que 11 y c es mayor que 12.");
+		FINSI
+	FINSI
+FINSI sino HACER
+	ESCRIBIR("s es menor o igual que 30");
+FINSI
+----------------------------------------------------------------------------> MIENTRAS
+entero x;
+x= 0
+entero z;
+z = 1;
+mientras(x<4+z)HACER	
+	x++;
+	ENTERO b;
+	b=0;
+	mientras(b<4+z)HACER
+		b=b+1;
+		b++;
+		ESCRIBIR(x & " * " & b & " = " & x * b);
+	FINMIENTRAS
+	ESCRIBIR("***************");
+FINMIENTRAS
+
+------------------------------------------------------------------------------> SWITCH'
+entero a;
+a =3;
+Segun a Hacer
+(1) : Escribir("HOLA OPCION 1");
+(2) : Escribir("HOLA OPCION 2");
+(3) : Escribir("HOLA OPCION 3");
+(4) : Escribir("HOLA OPCION 4");
+Finsegun
+
+------------------------------------------------------------------------------> FUNCIONES
+entero x;
+entero y;
+Funcion sumar(x,y) Hacer
+
+    entero z;
+    z = x + y;
+    retornar z;
+
+FinFuncion
+Funcion restar (x,y) Hacer
+
+    entero z;
+    z = x - y;
+    retornar z;
+
+FinFuncion
+Incio
+sumar(2,3);
+restar(2,3);
+
+Fin
+
+
+FUNCION CADENA
+
+Funcion cadena imprimir(){
+Escribir ("HOLAA FUNCION");
+}
+
+Funcion main(){
+
+imprimir();
+Escribir ("Hola MIAN");
+}
+*************************************************************************
+FUNCION ENTERO
+
+Funcion entero suma(entero x, entero y){
+Escribir ("=====");
+escribir(x+y);
+}
+
+Funcion main(){
+Escribir ("HOLA MAIN");
+suma(12,29);
+
+}

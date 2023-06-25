@@ -31,6 +31,7 @@ COMENTMULTILINEA    =   "/*""/"*([^*/]|[^*]"/"|"*"[^/])*"*"*"*/"
 //-------> keywords
 ENTERO = "entero" | "Entero" | "ENTERO"
 CADENA = "cadena" | "Cadena" | "CADENA"
+FLOTANTE = "flotante" | "Flotante" | "FLOTANTE"
 ESCRIBIR = "escribir" | "Escribir" | "ESCRIBIR"
 HACER = "hacer" | "Hacer" | "HACER"
 
@@ -49,6 +50,8 @@ FINPARA = "finpara" | "Finpara" | "FINPARA"
 SEGUN = "segun" | "Segun" | "SEGUN"
 DEOTROMODO = "deotromodo" | "Deotromodo" | "DEOTROMODO"
 FINSEGUN = "finsegun" | "Finsegun" | "FINSEGUN"
+FUNCION = "funcion" | "Funcion" | "FUNCION"
+MAIN = "main" | "Main" | "MAIN";
 
 %%
 
@@ -59,6 +62,7 @@ FINSEGUN = "finsegun" | "Finsegun" | "FINSEGUN"
 
 {ESCRIBIR}               {return new Symbol(sym.RESCRIBIR,yyline,yychar, yytext());}
 {ENTERO}                 {return new Symbol(sym.RENTERO,yyline,yychar, yytext());}
+{FLOTANTE}               {return new Symbol(sym.RFLOTANTE,yyline,yychar, yytext());}
 {MIENTRAS}               {return new Symbol(sym.RMIENTRAS,yyline,yychar, yytext());}
 {SI}                     {return new Symbol(sym.RSI,yyline,yychar, yytext());}
 {SINO}                   {return new Symbol(sym.RSINO,yyline,yychar, yytext());}
@@ -73,6 +77,8 @@ FINSEGUN = "finsegun" | "Finsegun" | "FINSEGUN"
 {SEGUN}                  {return new Symbol(sym.RSEGUN,yyline,yychar,yytext());}
 {FINSEGUN}               {return new Symbol(sym.RFINSEGUN,yyline,yychar,yytext());}
 {DEOTROMODO}             {return new Symbol(sym.RDEOTROMODO,yyline,yychar,yytext());}
+{FUNCION}                {return new Symbol(sym.FUN,yyline,yychar,yytext());}
+{MAIN}                   {return new Symbol(sym.MAIN,yyline,yychar,yytext());}
 
 
 ";"   {return new Symbol(sym.PUNTOCOMA,yyline,yychar, yytext());}
@@ -87,6 +93,9 @@ FINSEGUN = "finsegun" | "Finsegun" | "FINSEGUN"
 "<"   {return new Symbol(sym.MENOR,yyline,yychar, yytext());}
 ">"   {return new Symbol(sym.MAYOR,yyline,yychar, yytext());}
 "="   {return new Symbol(sym.IGUAL,yyline,yychar, yytext());}
+"{"   {return new Symbol(sym.LLAVEA,yyline,yychar, yytext());}
+"}"   {return new Symbol(sym.LLAVEB,yyline,yychar, yytext());}
+","   {return new Symbol(sym.COMA,yyline,yychar, yytext());}
 
 "++"  {return new Symbol(sym.INCREMENTO,yyline,yychar, yytext());}
 "--"  {return new Symbol(sym.DECREMENTO,yyline,yychar, yytext());}

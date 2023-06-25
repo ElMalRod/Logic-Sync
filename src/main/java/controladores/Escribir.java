@@ -30,8 +30,26 @@ public class Escribir implements Instruccion{
     }
     @Override
     public String ejecutar(TablaDeSimbolos ts) {
-        System.out.println( contenido.ejecutar(ts).toString());
-        escribir(contenido.ejecutar(ts).toString());
+        Object resultado = contenido.ejecutar(ts);
+        if (resultado instanceof Double) {
+            double aux = (double) resultado;
+            //System.out.println("ES UN DOUBLE");
+            int parteEntera = Double.valueOf(aux).intValue();
+            int parteDecimal = (int) ((aux - parteEntera) * 100);
+            if (parteDecimal == 0) {
+                //System.out.println("ES UN ENTERO");
+                escribir(String.valueOf(parteEntera));
+
+            } else {
+                //System.out.println("ES UN DECIMAL");
+                escribir(String.valueOf(aux));
+            }
+        } else {
+            //System.out.println( contenido.ejecutar(ts).toString());
+            escribir(contenido.ejecutar(ts).toString());
+        }
+
+
         return null;
     }
 
