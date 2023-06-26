@@ -1,79 +1,64 @@
+==========================PRUEBAS FASE 1 y 2===============================
 ----------------> PARA
-entero a;
-a= 1;
-PARA a  HASTA 10 ConPaso 1 Hacer
+FUNCION main (){
+PARA entero a = 0  HASTA 10 ConPaso 1 {
 escribir(2*a);
-a++;
-FINPARA
+}
+}
 ---------------------------------------------------------------------------> IF
+FUNCION main (){
+escribir("HOLA MAIN");
 entero s;
-s= 20
+s= 20;
 entero b;
 b = 12;
 entero c;
 c = 11;
-si(s>40) HACER
+si(s>40) {
 	ESCRIBIR("s es mayor que 30.");
-	si(b>11) HACER
+	si(b>11) {
 		ESCRIBIR("s es mayor que 30 y b es mayor que 11.");
-		si(c>12)HACER
+		si(c>12){
 			ESCRIBIR("s es mayor que 30, b es mayor que 11 y c es mayor que 12.");
-		FINSI
-	FINSI
-FINSI sino HACER
+		}
+	}
+ }sino {
 	ESCRIBIR("s es menor o igual que 30");
-FINSI
+}
+}
 ----------------------------------------------------------------------------> MIENTRAS
+FUNCION main (){
 entero x;
-x= 0
+x= 0;
 entero z;
 z = 1;
-mientras(x<4+z)HACER	
+mientras(x<4+z){
 	x++;
 	ENTERO b;
 	b=0;
-	mientras(b<4+z)HACER
+	mientras(b<4+z){
 		b=b+1;
 		b++;
 		ESCRIBIR(x & " * " & b & " = " & x * b);
-	FINMIENTRAS
+	}
 	ESCRIBIR("***************");
-FINMIENTRAS
+}
+}
+==========================PRUEBAS FASE FINAL==============================
 
-------------------------------------------------------------------------------> SWITCH'
+******************************************************************************
+LEER
+
+Funcion main(){
 entero a;
-a =3;
-Segun a Hacer
-(1) : Escribir("HOLA OPCION 1");
-(2) : Escribir("HOLA OPCION 2");
-(3) : Escribir("HOLA OPCION 3");
-(4) : Escribir("HOLA OPCION 4");
-Finsegun
-
-------------------------------------------------------------------------------> FUNCIONES
-entero x;
-entero y;
-Funcion sumar(x,y) Hacer
-
-    entero z;
-    z = x + y;
-    retornar z;
-
-FinFuncion
-Funcion restar (x,y) Hacer
-
-    entero z;
-    z = x - y;
-    retornar z;
-
-FinFuncion
-Incio
-sumar(2,3);
-restar(2,3);
-
-Fin
-
-
+entero b;
+Escribir ("Ingrese numero");
+leer a;
+Escribir ("Ingrese numero");
+leer b;
+Escribir (a+b);
+}
+******************************************************************************
 FUNCION CADENA
 
 Funcion cadena imprimir(){
@@ -85,16 +70,117 @@ Funcion main(){
 imprimir();
 Escribir ("Hola MIAN");
 }
+
 *************************************************************************
 FUNCION ENTERO
 
-Funcion entero suma(entero x, entero y){
+Funcion entero suma(entero a, entero b){
 Escribir ("=====");
-escribir(x+y);
+escribir(a+b);
+}
+Funcion entero resta(entero x, entero y){
+Escribir ("=====");
+escribir(x-y);
+}
+Funcion entero mult(entero i, entero j, entero k){
+Escribir ("=====");
+escribir(i*j*k);
+}
+Funcion entero div(entero n, entero m){
+Escribir ("=====");
+escribir(n/m);
 }
 
 Funcion main(){
 Escribir ("HOLA MAIN");
 suma(12,29);
+resta(40,29);
+mult(5,10,2);
+div(20,2);
 
 }
+
+*************************************************************************
+FUNCION CADENA
+
+funcion text(cadena y){
+escribir(y);
+}
+funcion main(){
+escribir("HOLA MAIN");
+text("ASIGNANDO TEXTO");
+}
+*************************************************************************
+FUNCION UNION
+
+funcion mezcla(cadena y, entero x){
+escribir(y &  " el valor: " & x);
+}
+
+funcion main(){
+escribir("HOLA MAIN");
+mezcla("El numero tiene ", 17);
+}
+
+*************************************************************************
+SWITCH
+
+FUNCION main (){
+escribir("HOLA MAIN");
+entero a;
+a =3;
+Segun (a){
+caso 1 : Escribir("HOLA OPCION 1");
+break
+caso 2 : Escribir("HOLA OPCION 2");
+break
+caso 3 : Escribir("HOLA OPCION 3");
+break
+caso 4: Escribir("HOLA OPCION 4");
+break
+Defecto: Escribir("HOLA OPCION DEFECTO");
+}
+}
+
+*************************************************************************
+COMPLETO
+
+Funcion entero suma(entero a, entero b){
+escribir(a+b);
+}
+Funcion entero resta(entero x, entero y){
+escribir(x-y);
+}
+Funcion entero mult(entero i, entero j, entero k){
+escribir(i*j*k);
+}
+Funcion entero div(entero n, entero m){
+escribir(n/m);
+}
+
+Funcion cadena imprimir(){
+Escribir ("CALCULADORA");
+}
+
+Funcion main(){
+Escribir ("***************************");
+entero op;
+escribir("Ingrese una opcion");
+leer op;
+Segun (op){
+caso 1 : escribir("la suma es: ");suma(12,29);
+break
+caso 2 : escribir("la resta es: ");resta(40,29);
+break
+caso 3 : escribir("la multiplicacion es: ");mult(5,10,2);
+break
+caso 4:  escribir("la division es: ");div(20,2);
+break
+Defecto: Escribir("HOLA OPCION DEFECTO");
+}
+}
+
+*************************************************************************
+COMPLETO 2.0
+
+

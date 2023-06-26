@@ -9,6 +9,9 @@ parser code
     public LinkedList<Instruccion> AST;
     public static LinkedList<String> lista = new LinkedList<String>();
     public static LinkedList<Object> valores = new LinkedList<Object>();
+    public static LinkedList<String> ops = new LinkedList<String>();
+    public static LinkedList<Object> listaIns = new LinkedList<Object>();
+    public static LinkedList<Instruccion> defecto = new LinkedList<Instruccion>();
 
     public void syntax_error(Symbol s){
             System.err.println("!!!!!!! Error Sintactico, Panic Mode !!!!!!! en la Línea " + (s.left) +" Columna "+s.right+ ". No se esperaba: " +s.value+".");
@@ -24,9 +27,13 @@ parser code
         lista.add(s);
     }
     public void ver(){
-        for (String s : lista) {
-            System.out.println(s);
+        for (String s : ops) {
+            System.out.println("op : "+s);
         }
+    }
+    public void limpiar(){
+        System.out.println("----Limpiando lista");
+        lista.clear();
     }
 :}
 
@@ -39,9 +46,9 @@ terminal String DECIMAL;
 terminal String CARACTER;
 terminal String RFLOTANTE;
 terminal String CADENA;
-terminal String UMENOS, FUN, MAIN;
-terminal String RESCRIBIR, RMIENTRAS,RENTERO,RSI,RSINO,RCADENA,RHACER,RFINSI, RFINMIENTRAS;
-terminal String RHASTA, RPARA, RCONPASO, RFINPARA,RSEGUN,RFINSEGUN, RDEOTROMODO;
+terminal String UMENOS, FUN, MAIN, RLEER;
+terminal String RESCRIBIR, RMIENTRAS,RENTERO,RSI,RSINO,RCADENA;
+terminal String RHASTA, RPARA, RCONPASO,RSEGUN, RCASE, RBREAK, RDEFECTO;
 terminal String IGUAL;
 terminal String IDENTIFICADOR;
 
@@ -52,7 +59,7 @@ non terminal Operacion expresion;
 non terminal LinkedList<Instruccion> else_ifs;
 non terminal Operacion expresion_cadena;
 non terminal Operacion expresion_logica;
-non terminal caso, cases, parametros, llamada;
+non terminal casos, parametros, llamada, cases;
 precedence left CONCAT;
 precedence left MAS,MENOS;
 precedence left POR,DIV;
@@ -73,17 +80,16 @@ instrucciones ::=
 
 instruccion ::=
    RESCRIBIR   PARENTA expresion_cadena:a PARENTC PUNTOCOMA                                                                 {:RESULT=new Escribir(a);:}
- | RMIENTRAS    PARENTA expresion_logica:a PARENTC RHACER instrucciones:b RFINMIENTRAS                                      {:RESULT=new Mientras(a,b);:}
+ | RMIENTRAS    PARENTA expresion_logica:a PARENTC LLAVEA instrucciones:b LLAVEB                                      {:RESULT=new Mientras(a,b);:}
  | RENTERO      IDENTIFICADOR:a PUNTOCOMA                                                                                   {:RESULT=new Declaracion(a,Tipo.NUMERO);:}
  | RCADENA    IDENTIFICADOR:a PUNTOCOMA                                                                                     {:RESULT=new Declaracion(a,Tipo.CARACTER);:}
  | RFLOTANTE IDENTIFICADOR:a PUNTOCOMA                                                                                      {:RESULT=new Declaracion(a,Tipo.DECIMAL);:}
  | IDENTIFICADOR:a IGUAL expresion:b PUNTOCOMA                                                                              {:RESULT=new Asignacion(a,b);:}
- | RSI PARENTA expresion_logica:a PARENTC RHACER instrucciones:b RFINSI                                                     {:RESULT=new Si(a,b);:}
- | RSI PARENTA expresion_logica:a PARENTC RHACER instrucciones:b RFINSI  RSINO RHACER instrucciones:c RFINSI                {:RESULT=new Si(a,b,c);:}
- | RSI PARENTA expresion_logica:a PARENTC RHACER instrucciones:b RFINSI else_ifs:l                                          {:RESULT=new Si(a,b,l,null);:}
- | RSI PARENTA expresion_logica:a PARENTC RHACER instrucciones:b RFINSI else_ifs:l RSINO RHACER instrucciones:c RFINSI      {:RESULT=new Si(a,b,l,c);:}
- | RPARA expresion:a RHASTA expresion:b RCONPASO expresion:c RHACER instrucciones:d RFINPARA                                {:RESULT=new Para(a,b,c,d);:}
- | RSEGUN expresion:a  RHACER cases:l RFINSEGUN                                                                             {://RESULT=new Segun(a,l);:}
+ | RSI PARENTA expresion_logica:a PARENTC LLAVEA instrucciones:b LLAVEB                                                     {:RESULT=new Si(a,b);:}
+ | RSI PARENTA expresion_logica:a PARENTC LLAVEA instrucciones:b LLAVEB  RSINO LLAVEA instrucciones:c LLAVEB                {:RESULT=new Si(a,b,c);:}
+ | RSI PARENTA expresion_logica:a PARENTC LLAVEA instrucciones:b LLAVEB else_ifs:l                                          {:RESULT=new Si(a,b,l,null);:}
+ | RSI PARENTA expresion_logica:a PARENTC LLAVEA instrucciones:b LLAVEB else_ifs:l RSINO LLAVEA instrucciones:c LLAVEB      {:RESULT=new Si(a,b,l,c);:}
+ | RPARA RENTERO IDENTIFICADOR:x IGUAL expresion:a RHASTA expresion:b RCONPASO expresion:c LLAVEA instrucciones:d LLAVEB    {:RESULT=new Para(a,b,c,d,x); :}
  | IDENTIFICADOR:a INCREMENTO PUNTOCOMA                                                                                     {:RESULT=new Incremento(a);:}
  | IDENTIFICADOR:a DECREMENTO PUNTOCOMA                                                                                     {:RESULT=new Decremento(a);:}
  | FUN MAIN PARENTA PARENTC LLAVEA instrucciones:a LLAVEB                                                                   {:RESULT=new Funcion(a);:}
@@ -91,39 +97,46 @@ instruccion ::=
  | FUN RENTERO IDENTIFICADOR:a PARENTA PARENTC LLAVEA instrucciones:b LLAVEB                                                {:RESULT=new Funcion(a,b);:}
  | FUN RCADENA IDENTIFICADOR:a PARENTA PARENTC LLAVEA instrucciones:b LLAVEB                                                {:RESULT=new Funcion(a,b);:}
  | FUN RFLOTANTE IDENTIFICADOR:a PARENTA PARENTC LLAVEA instrucciones:b LLAVEB                                              {:RESULT=new Funcion(a,b);:}
- | FUN IDENTIFICADOR:a PARENTA parametros PARENTC LLAVEA instrucciones:b LLAVEB                                             {:RESULT=new Funcion(a,b,lista);:}
- | FUN RENTERO IDENTIFICADOR:a PARENTA parametros PARENTC LLAVEA instrucciones:b LLAVEB                                     {:RESULT=new Funcion(a,b,lista);:}
+ | FUN IDENTIFICADOR:a PARENTA parametros PARENTC LLAVEA instrucciones:b LLAVEB                                             {:RESULT=new Funcion(a,b,lista); :}
+ | FUN RENTERO IDENTIFICADOR:a PARENTA parametros PARENTC LLAVEA instrucciones:b LLAVEB                                     {:RESULT=new Funcion(a,b,lista); :}
  | FUN RCADENA IDENTIFICADOR:a PARENTA parametros PARENTC LLAVEA instrucciones:b LLAVEB                                     {:RESULT=new Funcion(a,b,lista);:}
  | FUN RFLOTANTE IDENTIFICADOR:a PARENTA parametros PARENTC LLAVEA instrucciones:b LLAVEB                                   {:RESULT=new Funcion(a,b,lista);:}
  | IDENTIFICADOR:a PARENTA PARENTC PUNTOCOMA                                                                                {:RESULT=new EjecutarFuncion(a);:}
  | IDENTIFICADOR:a PARENTA llamada PARENTC PUNTOCOMA                                                                        {:RESULT=new EjecutarFuncion(a,valores);:}
+ | RSEGUN PARENTA expresion:a PARENTC LLAVEA cases LLAVEB                                                                   {:RESULT= new Segun(a, ops, listaIns, defecto);:}
+ | RLEER IDENTIFICADOR:a PUNTOCOMA                                                                                          {:RESULT=new Leer(a);:}
  | error
 ;
+cases ::=
+   casos {::}
+ | cases casos:a {::}
+ ;
 
+casos ::=
+   RCASE ENTERO:a DOSPUNTOS instrucciones:b RBREAK          {: ops.add(a.toString()); listaIns.add(b); System.out.println("encontro un case");:}
+ | RDEFECTO DOSPUNTOS instrucciones:a                            {:defecto=a; System.out.println("encontro case por defecto");:}
+ ;
 parametros ::=
    RENTERO IDENTIFICADOR:a {: RESULT=new Declaracion(a,Tipo.NUMERO); agregar(a.toString()); System.out.println("parametro entero "+a.toString());:}
    | RCADENA IDENTIFICADOR:a {:RESULT=new Declaracion(a,Tipo.CARACTER); agregar(a.toString()); System.out.println("parametro cadena");:}
    | RFLOTANTE IDENTIFICADOR:a {:RESULT=new Declaracion(a,Tipo.DECIMAL); agregar(a.toString());  System.out.println("parametro decimal");:}
    | parametros:a COMA  RENTERO IDENTIFICADOR:b    {:agregar(b.toString()); RESULT=new Declaracion(b,Tipo.NUMERO); System.out.println("parametro entero2");:}
+   | parametros:a COMA  RCADENA IDENTIFICADOR:b    {:agregar(b.toString()); RESULT=new Declaracion(b,Tipo.CARACTER); System.out.println("parametro entero2");:}
+   | parametros:a COMA  RFLOTANTE IDENTIFICADOR:b    {:agregar(b.toString()); RESULT=new Declaracion(b,Tipo.DECIMAL); System.out.println("parametro entero2");:}
    ;
 llamada ::=
-    ENTERO:a {:valores.add(new Double(a)); System.out.println("VALOR "+a.toString());:}
-    | CADENA:a
-    | DECIMAL:a
+    ENTERO:a {:valores .add(new Double(a)); System.out.println("VALOR "+a.toString());:}
+    | CADENA:a {:valores .add(a); System.out.println("VALOR "+a.toString());:}
+    | DECIMAL:a {:valores .add(new Double(a)); System.out.println("VALOR "+a.toString());:}
     | llamada COMA ENTERO:a {:valores.add(new Double(a)); System.out.println("VALOR "+a.toString());:}
+    | llamada COMA CADENA:a {:valores.add(a); System.out.println("VALOR "+a.toString());:}
+    | llamada COMA DECIMAL:a {:valores.add(new Double(a)); System.out.println("VALOR "+a.toString());:}
     ;
-else_ifs ::= else_ifs:l RSINO RSI PARENTA expresion_logica:a PARENTC RHACER instrucciones:b RFINSI      {:RESULT= l; RESULT.add(new Si(a,b));:}
-                      | RSINO RSI PARENTA expresion_logica:a PARENTC RHACER instrucciones:b RFINSI      {:RESULT= new LinkedList<>(); RESULT.add(new Si(a,b));:}
+else_ifs ::= else_ifs:l RSINO RSI PARENTA expresion_logica:a PARENTC LLAVEA instrucciones:b LLAVEB      {:RESULT= l; RESULT.add(new Si(a,b));:}
+                      | RSINO RSI PARENTA expresion_logica:a PARENTC LLAVEA instrucciones:b LLAVEB      {:RESULT= new LinkedList<>(); RESULT.add(new Si(a,b));:}
 ;
-cases ::=
-    caso
- | cases caso
- ;
 
-caso ::=
-    PARENTA expresion:a PARENTC DOSPUNTOS instrucciones:b           {::}
- | RDEOTROMODO DOSPUNTOS instrucciones:a                            {::}
- ;
+
 
 expresion ::=
     MENOS expresion:a                                        {:RESULT=new Operacion(a,Operacion.Tipo_operacion.NEGATIVO);:}%prec UMENOS

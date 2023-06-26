@@ -4,19 +4,6 @@ import java.util.LinkedList;
 import controladores.Simbolo.Tipo;
 public class Funcion implements Instruccion{
 
-
-    /*
-        private final String id;
-        private final LinkedList<Instruccion> listaInstrucciones;
-        private final LinkedList<Instruccion> listaParametros;
-        private final Simbolo.Tipo tipo;
-        public Funcion(String id, LinkedList<Instruccion> listaParametros, LinkedList<Instruccion> listaInstrucciones, Simbolo.Tipo tipo) {
-            this.id = id;
-            this.listaInstrucciones = listaInstrucciones;
-            this.listaParametros = listaParametros;
-            this.tipo = tipo;
-        }
-    */
     private final String id;
     private final Boolean esMain;
     private final LinkedList<Instruccion> listaInstrucciones;

@@ -33,25 +33,23 @@ ENTERO = "entero" | "Entero" | "ENTERO"
 CADENA = "cadena" | "Cadena" | "CADENA"
 FLOTANTE = "flotante" | "Flotante" | "FLOTANTE"
 ESCRIBIR = "escribir" | "Escribir" | "ESCRIBIR"
-HACER = "hacer" | "Hacer" | "HACER"
+LEER = "leer" | "Leer" | "LEER"
 
 SI = "si" | "Si" | "SI"
 SINO = "sino" | "Sino" | "SINO"
-FINSI = "finsi" | "Finsi" | "FINSI"
 
 MIENTRAS = "mientras" | "Mientras" | "MIENTRAS"
-FINMIENTRAS = "finmientras" | "Finmientras" | "FINMIENTRAS"
 
 PARA = "para" | "Para" | "PARA"
 HASTA = "hasta" | "Hasta" | "HASTA"
 CON_PASO = "conpaso" | "Conpaso" | "CONPASO"
-FINPARA = "finpara" | "Finpara" | "FINPARA"
 
 SEGUN = "segun" | "Segun" | "SEGUN"
-DEOTROMODO = "deotromodo" | "Deotromodo" | "DEOTROMODO"
-FINSEGUN = "finsegun" | "Finsegun" | "FINSEGUN"
 FUNCION = "funcion" | "Funcion" | "FUNCION"
 MAIN = "main" | "Main" | "MAIN";
+CASE = "caso" | "Caso" | "CASO";
+DEFECTO = "defecto" | "Defecto" | "DEFECTO";
+BREAK = "break" | "Break" | "BREAK";
 
 %%
 
@@ -61,24 +59,23 @@ MAIN = "main" | "Main" | "MAIN";
 {CADENACOMILLASDOBLES}   {return new Symbol(sym.CADENA,yyline,yychar, (yytext()).substring(1,yytext().length()-1));}
 
 {ESCRIBIR}               {return new Symbol(sym.RESCRIBIR,yyline,yychar, yytext());}
+{LEER}                   {return new Symbol(sym.RLEER,yyline,yychar, yytext());}
 {ENTERO}                 {return new Symbol(sym.RENTERO,yyline,yychar, yytext());}
 {FLOTANTE}               {return new Symbol(sym.RFLOTANTE,yyline,yychar, yytext());}
 {MIENTRAS}               {return new Symbol(sym.RMIENTRAS,yyline,yychar, yytext());}
 {SI}                     {return new Symbol(sym.RSI,yyline,yychar, yytext());}
 {SINO}                   {return new Symbol(sym.RSINO,yyline,yychar, yytext());}
 {CADENA}                 {return new Symbol(sym.RCADENA,yyline,yychar,yytext());}
-{FINSI}                  {return new Symbol(sym.RFINSI,yyline,yychar,yytext());}
-{HACER}                  {return new Symbol(sym.RHACER,yyline,yychar,yytext());}
-{FINMIENTRAS}            {return new Symbol(sym.RFINMIENTRAS,yyline,yychar,yytext());}
 {PARA}                   {return new Symbol(sym.RPARA,yyline,yychar,yytext());}
-{FINPARA}                {return new Symbol(sym.RFINPARA,yyline,yychar,yytext());}
 {HASTA}                  {return new Symbol(sym.RHASTA,yyline,yychar,yytext());}
 {CON_PASO}               {return new Symbol(sym.RCONPASO,yyline,yychar,yytext());}
 {SEGUN}                  {return new Symbol(sym.RSEGUN,yyline,yychar,yytext());}
-{FINSEGUN}               {return new Symbol(sym.RFINSEGUN,yyline,yychar,yytext());}
-{DEOTROMODO}             {return new Symbol(sym.RDEOTROMODO,yyline,yychar,yytext());}
 {FUNCION}                {return new Symbol(sym.FUN,yyline,yychar,yytext());}
 {MAIN}                   {return new Symbol(sym.MAIN,yyline,yychar,yytext());}
+{CASE}                   {return new Symbol(sym.RCASE,yyline,yychar,yytext());}
+{DEFECTO}                {return new Symbol(sym.RDEFECTO,yyline,yychar,yytext());}
+{BREAK}                  {return new Symbol(sym.RBREAK,yyline,yychar,yytext());}
+
 
 
 ";"   {return new Symbol(sym.PUNTOCOMA,yyline,yychar, yytext());}

@@ -12,43 +12,41 @@ public class sym {
   public static final int POR = 8;
   public static final int CONCAT = 10;
   public static final int ENTERO = 18;
-  public static final int RSEGUN = 39;
-  public static final int RHACER = 32;
+  public static final int RSEGUN = 36;
   public static final int PUNTOCOMA = 2;
-  public static final int RFINSI = 33;
-  public static final int IDENTIFICADOR = 43;
-  public static final int RMIENTRAS = 27;
-  public static final int IGUAL = 42;
-  public static final int RESCRIBIR = 26;
+  public static final int IDENTIFICADOR = 41;
+  public static final int RMIENTRAS = 28;
+  public static final int IGUAL = 40;
+  public static final int RESCRIBIR = 27;
   public static final int FUN = 24;
   public static final int CARACTER = 20;
-  public static final int RENTERO = 28;
+  public static final int RDEFECTO = 39;
+  public static final int RENTERO = 29;
+  public static final int RLEER = 26;
   public static final int DIV = 9;
-  public static final int RCONPASO = 37;
+  public static final int RCONPASO = 35;
   public static final int INCREMENTO = 12;
-  public static final int RPARA = 36;
+  public static final int RPARA = 34;
   public static final int MAIN = 25;
   public static final int UMENOS = 23;
   public static final int PARENTC = 5;
   public static final int PARENTA = 4;
   public static final int EOF = 0;
   public static final int DECIMAL = 19;
-  public static final int RFINMIENTRAS = 34;
   public static final int DECREMENTO = 13;
   public static final int error = 1;
   public static final int COMA = 11;
   public static final int CADENA = 22;
   public static final int MENOS = 7;
   public static final int MENOR = 14;
-  public static final int RHASTA = 35;
-  public static final int RSI = 29;
+  public static final int RHASTA = 33;
+  public static final int RSI = 30;
   public static final int MAYOR = 15;
-  public static final int RFINSEGUN = 40;
-  public static final int RCADENA = 31;
-  public static final int RFINPARA = 38;
-  public static final int RDEOTROMODO = 41;
-  public static final int RSINO = 30;
+  public static final int RCASE = 37;
+  public static final int RCADENA = 32;
+  public static final int RSINO = 31;
   public static final int RFLOTANTE = 21;
+  public static final int RBREAK = 38;
   public static final int LLAVEB = 17;
   public static final int LLAVEA = 16;
   public static final int MAS = 6;
@@ -79,22 +77,20 @@ public class sym {
   "UMENOS",
   "FUN",
   "MAIN",
+  "RLEER",
   "RESCRIBIR",
   "RMIENTRAS",
   "RENTERO",
   "RSI",
   "RSINO",
   "RCADENA",
-  "RHACER",
-  "RFINSI",
-  "RFINMIENTRAS",
   "RHASTA",
   "RPARA",
   "RCONPASO",
-  "RFINPARA",
   "RSEGUN",
-  "RFINSEGUN",
-  "RDEOTROMODO",
+  "RCASE",
+  "RBREAK",
+  "RDEFECTO",
   "IGUAL",
   "IDENTIFICADOR"
   };

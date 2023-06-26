@@ -10,6 +10,11 @@ public class Simbolo {
         this.id = id;
     }
 
+    public String getTipo() {
+        System.out.println("tipo: "+tipo);
+        return tipo.toString();
+    }
+
     public String getId() {
         return id;
     }
