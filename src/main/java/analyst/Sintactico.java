@@ -10,6 +10,9 @@ import java.util.LinkedList;
 import java_cup.runtime.Symbol;
 import java_cup.runtime.XMLElement;
 import controladores.Simbolo.Tipo;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
@@ -480,14 +483,36 @@ public class Sintactico extends java_cup.runtime.lr_parser {
 
     public void syntax_error(Symbol s){
             System.err.println("!!!!!!! Error Sintactico, Panic Mode !!!!!!! en la Línea " + (s.left) +" Columna "+s.right+ ". No se esperaba: " +s.value+".");
+            String a = "Error en la Línea " + (s.left) +" Columna "+s.right+ ". No se esperaba: " +s.value+".";
+            escribir(a);
     }
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
             System.err.println("!!!!!!! Error Sintactico, Panic Mode !!!!!!! irrecuperable en la Línea " + (s.left)+ " Columna "+s.right+". Componente " + s.value + " no reconocido.");
+            String a = "Error en la Línea " + (s.left)+ " Columna "+s.right+". Componente " + s.value + " no reconocido.";
+            escribir(a);
     }
     public LinkedList<Instruccion> getAST() {
         return AST;
     }
+    public void escribir(String a)
+    {
+        String rutaArchivo = "jiji.txt"; // Ruta del archivo existente
 
+        try {
+            FileWriter fileWriter = new FileWriter(rutaArchivo, true); // El segundo parámetro "true" habilita el modo de agregado
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+            String contenido = a;
+
+            bufferedWriter.write(contenido);
+            bufferedWriter.newLine();
+            bufferedWriter.close(); // Cierra el BufferedWriter
+
+
+        } catch (IOException e) {
+            System.out.println("Ocurrió un error al agregar líneas al archivo: " + e.getMessage());
+        }
+    }
     public void agregar(String s){
         lista.add(s);
     }

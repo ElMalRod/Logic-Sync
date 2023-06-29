@@ -12,6 +12,7 @@ public class TablaDeSimbolos extends LinkedList<Simbolo>{
     {
         String rutaArchivo = "jiji.txt"; // Ruta del archivo existente
 
+
         try {
             FileWriter fileWriter = new FileWriter(rutaArchivo, true); // El segundo parámetro "true" habilita el modo de agregado
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);

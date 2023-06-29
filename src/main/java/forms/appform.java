@@ -24,6 +24,27 @@ public class appform extends javax.swing.JFrame {
 
     public appform() {
         initComponents();
+
+    }
+    public void escribir(String a)
+    {
+        String rutaArchivo = "jiji.txt"; // Ruta del archivo existente
+
+
+        try {
+            FileWriter fileWriter = new FileWriter(rutaArchivo, true); // El segundo parámetro "true" habilita el modo de agregado
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+            String contenido = a;
+
+            bufferedWriter.write(contenido);
+            bufferedWriter.newLine();
+            bufferedWriter.close(); // Cierra el BufferedWriter
+
+
+        } catch (IOException e) {
+            System.out.println("Ocurrió un error al agregar líneas al archivo: " + e.getMessage());
+        }
     }
     public void mostrar(String rutaArchivo) {
         try {
@@ -40,7 +61,7 @@ public class appform extends javax.swing.JFrame {
             System.out.println("Ocurrió un error al leer el archivo: " + e.getMessage());
         }
     }
-    private static void interpretar( String path) {
+    private  void interpretar( String path) {
         Sintactico pars;
         LinkedList<Instruccion> AST_arbolSintaxisAbstracta=null;
         try {
@@ -52,22 +73,31 @@ public class appform extends javax.swing.JFrame {
             System.out.println("Error fatal en compilación de entrada.");
         }
         ejecutarAST(AST_arbolSintaxisAbstracta);
+        System.out.println("Fin de la compilación.");
+
     }
-    private static void ejecutarAST( LinkedList<Instruccion> ast) {
+    private  void ejecutarAST( LinkedList<Instruccion> ast) {
         if(ast==null){
             System.out.println("No es posible ejecutar las instrucciones porque\r\n"
                     + "el árbol no fue cargado de forma adecuada por la existencia\r\n"
                     + "de errores léxicos o sintácticos.");
+            mostrar("jiji.txt");
             return;
         }
         TablaDeSimbolos ts=new TablaDeSimbolos();
-        for(Instruccion ins:ast){
-            if(ins!=null)
-                ins.ejecutar(ts);
+        try {
+            for(Instruccion ins:ast){
+                if(ins!=null)
+                    ins.ejecutar(ts);
 
+            }
+        } catch (Exception ex) {
+            System.out.println("NO SE PUEDE PERO CASI.");
+            escribir("ERROR EN EL CODIGO.");
         }
+
     }
-    public void  LimpiarArchivo() {
+     public void  LimpiarArchivo() {
             String rutaArchivo = "jiji.txt"; // Ruta del archivo que deseas limpiar
 
             try {
@@ -188,6 +218,7 @@ public class appform extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     private void executebtActionPerformed(java.awt.event.ActionEvent evt) {
+
         LimpiarArchivo();
         interpretar(jTextArea1.getText().toString());
         System.out.println("leido");

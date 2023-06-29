@@ -7,7 +7,7 @@ escribir(2*a);
 }
 ---------------------------------------------------------------------------> IF
 FUNCION main (){
-escribir("HOLA MAIN");
+escribir("Prueba ifs anidados");
 entero s;
 s= 20;
 entero b;
@@ -181,6 +181,5 @@ Defecto: Escribir("HOLA OPCION DEFECTO");
 }
 
 *************************************************************************
-COMPLETO 2.0
 
 
